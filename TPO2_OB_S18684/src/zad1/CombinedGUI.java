@@ -31,10 +31,8 @@ public class CombinedGUI {
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         frame.setSize(800, 600);
 
-        // Initialize Wiki panel
         initWikiPanel();
 
-        // Initialize Data panel
         initDataPanel();
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -46,6 +44,7 @@ public class CombinedGUI {
         wikiPanel = new JPanel();
         wikiPanel.setLayout(new BoxLayout(wikiPanel, BoxLayout.PAGE_AXIS));
         JFXPanel jFXPanel = new JFXPanel();
+
         Platform.runLater(() -> {
             WebView browserView = new WebView();
             WebEngine engine = browserView.getEngine();
@@ -68,20 +67,18 @@ public class CombinedGUI {
         // City and Currency input fields
         JPanel inputPanel = new JPanel(new GridLayout(2, 2));
 
-        // City input field
-        inputPanel.add(new JLabel("Enter City: "));
+        inputPanel.add(new JLabel("Wpisz miasto: "));
         cityTextField = new JTextField(15);
         inputPanel.add(cityTextField);
 
-        // Currency input field
-        inputPanel.add(new JLabel("Enter Currency: "));
+        inputPanel.add(new JLabel("Wpisz walute: "));
         currencyTextField = new JTextField(3);
         inputPanel.add(currencyTextField);
 
         dataPanel.add(inputPanel);
 
         // Update button
-        JButton updateButton = new JButton("Update");
+        JButton updateButton = new JButton("Zaktualizuj");
         updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -102,11 +99,17 @@ public class CombinedGUI {
     private void updateWeatherLabel() {
         try {
             String weatherInfo = s.getWeather(s.city);//s.getWeather(s.city)
-            //String jsonString = s.getWeather(s.city);
-            //JSONObject jsonObject = new JSONObject(jsonString);
-            //weatherInfo = jsonObject.getString("humidity"); //jsonObject.getString("humidity");
-            //System.out.println(jsonObject);
-            JLabel weatherLabel = new JLabel("Weather at " + s.city + ": " + weatherInfo);
+            System.out.println(weatherInfo);
+            JSONObject data = new JSONObject(weatherInfo);
+
+            // Pobieranie wartości pogodowych
+            double temperature = data.getJSONObject("main").getDouble("temp");
+            int humidity = data.getJSONObject("main").getInt("humidity");
+            int pressure = data.getJSONObject("main").getInt("pressure");
+            String weatherMain = data.getJSONArray("weather").getJSONObject(0).getString("main");
+            String cityWeatherInfo = "Temp:"+temperature+" Wilgotność:"+humidity+" Ciśnienie:"+pressure+" Glowny stan pogody:"+weatherMain;
+
+            JLabel weatherLabel = new JLabel("Pogoda w " + s.city + ": " + cityWeatherInfo);
             dataPanel.add(weatherLabel, 0); // Add at the beginning
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,10 +118,11 @@ public class CombinedGUI {
 
     private void updateCurrencyLabels() {
         try {
-            JLabel currencyLabel1 = new JLabel("Rate for " + s.currencyToRate + " in " + s.currencyCode + " is " + s.getRateFor(s.currencyToRate).toString());
+            JLabel currencyLabel1 = new JLabel("Kurs dla " + s.currencyToRate + " w " + s.currencyCode
+                    + " wynosi " + s.getRateFor(s.currencyToRate).toString());
             dataPanel.add(currencyLabel1, 1); // Add after the first label
 
-            JLabel currencyLabel2 = new JLabel("Rate for " + s.currencyCode + " in PLN is " + s.getNBPRate().toString());
+            JLabel currencyLabel2 = new JLabel("Kurs dla " + s.currencyCode + " w PLN wynosi " + s.getNBPRate().toString());
             dataPanel.add(currencyLabel2, 2); // Add after the second label
         } catch (Exception e) {
             e.printStackTrace();

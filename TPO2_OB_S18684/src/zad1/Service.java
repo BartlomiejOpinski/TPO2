@@ -40,7 +40,7 @@ public class Service {
         String longitude = latlon.get("lon").toString();
 
         String baseUrl = "https://api.openweathermap.org/data/2.5/weather";
-        String endpoint = "?lat="+latitude+"&lon="+longitude+"&appid=";
+        String endpoint = "?lat="+latitude+"&lon="+longitude+"&units=metric&appid=";
         String url = baseUrl+endpoint+apiKey;
         String response;
 
@@ -88,11 +88,11 @@ public class Service {
     }
 
 
-    public Double getRateFor(String currencyCode) throws MalformedURLException
+    public Double getRateFor(String code) throws MalformedURLException
     {
-        currencyToRate = currencyCode;
+        currencyToRate = code;
         String response = "";
-        String apiUrl = "https://v6.exchangerate-api.com/v6/af052832d0e06a9ca3165b47/latest/" + currencyCode;
+        String apiUrl = "https://v6.exchangerate-api.com/v6/af052832d0e06a9ca3165b47/latest/" + code;
 
         try
         {
@@ -113,6 +113,11 @@ public class Service {
             try {
                 String url = "http://api.nbp.pl/api/exchangerates/rates/a/" + this.currencyCode + "/?format=json";
                 response = readUrl(url);
+                String url2 = "http://api.nbp.pl/api/exchangerates/rates/b/" + this.currencyCode + "/?format=json";
+                response += readUrl(url2);
+                String url3 = "http://api.nbp.pl/api/exchangerates/rates/c/" + this.currencyCode + "/?format=json";
+                response += readUrl(url3);
+
             }
             catch (IOException exc) {
                 exc.printStackTrace();
